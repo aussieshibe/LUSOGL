@@ -5,17 +5,15 @@
 		<title>OpenGL Test</title>
 	</head>
 
-	<body onload="start()">
+	<body>
 		<canvas id="glcanvas" width="640" height="480">
 			Your browser doesn't appear to support the <code>&lt;canvas&gt;</code> element.
 		</canvas>
 	</body>
 
 	<footer>
-		<script src="./js/sylvester.js"></script>
-		<script src="./js/glUtils.js"></script>
-		<script src="./js/gl-matrix.js"></script>
-		<script src="./js/main.js"></script>
+		<script src="js/lib/gl-matrix.js"></script>
+		<script data-main="js/main" src="js/lib/require.js"></script>
 
 		<script id="shader-fs" type="x-shader/x-fragment">
 			varying highp vec2 vTextureCoord;

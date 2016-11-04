@@ -204,7 +204,7 @@ function mvTranslate(v) {
   multMatrix(Matrix.Translation($V([v[0], v[1], v[2]])).ensure4x4());
 }
 
-function setMatrixUniforms() {
+function setMatrixUniforms(gl, shaderProgram) {
   var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
   gl.uniformMatrix4fv(pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
 
@@ -242,4 +242,43 @@ function mvRotate(angle, v) {
   
   var m = Matrix.Rotation(inRadians, $V([v[0], v[1], v[2]])).ensure4x4();
   multMatrix(m);
+}
+
+function getShader(gl, id, type) {
+  var shaderScript, theSource, currentChild, shader;
+
+  shaderScript = document.getElementById(id);
+
+  if (!shaderScript) {
+    return null;
+  }
+
+  theSource = shaderScript.text;
+
+  if (!type) {
+    if (shaderScript.type == "x-shader/x-fragment") {
+      type = gl.FRAGMENT_SHADER;
+    } else if (shaderScript.type == "x-shader/x-vertex") {
+      type = gl.VERTEX_SHADER;
+    } else {
+      // Unknown shader type
+      return null;
+    }
+  }
+
+  shader = gl.createShader(type);
+
+  gl.shaderSource(shader, theSource);
+
+  // Compile shader program
+  gl.compileShader(shader);
+
+  // Check for successful compile
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    alert("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    return null;
+  }
+
+  return shader;
 }
