@@ -15,17 +15,15 @@ var gl; // Global variable for WebGL context
 
 var lastUpdate = Date.now();
 
-var cubes = [];
+var chunk;
 
-requirejs(['sylvester', 'glUtils', 'gl-matrix', 'Cube'],
+requirejs(['sylvester', 'glUtils', 'gl-matrix', 'Cube', 'Chunk'],
 		start);
 
 function start() {
 	var canvas = document.getElementById("glcanvas");
 
-	for (i = 0; i < 100; i++) {
-		cubes.push(new Cube());
-	}
+	chunk = new Chunk();
 
 	// Initialise GL context
 	gl = initWebGL(canvas);
@@ -44,9 +42,7 @@ function start() {
 	// Clear the color as well as the depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	for (i in cubes) {
-		cubes[i].init(gl);
-	}
+	chunk.init(gl);
 
 	setInterval(gameLoop, 15);
 }
@@ -76,17 +72,12 @@ function drawScene() {
 
 	perspectiveMatrix = makePerspective(45, 640.0/480.0, 0.1, 100.0);
 
+	var lookat = makeLookAt(10, 10, 10, 1, 1, 1, 0, 1, 0);
+
 	loadIdentity();
-	mvTranslate([-0.0, 0.0, -20.0]);
+	multMatrix(lookat);
 
-	
-
-	for (i in cubes) {
-		mvPushMatrix();
-		cubes[i].draw(gl);
-		mvPopMatrix();
-	}
-
+	chunk.draw(gl);
 
 }
 
@@ -94,9 +85,7 @@ function updateScene() {
 	var now = Date.now();
 	var deltaT = now - lastUpdate;
 	
-	for (i in cubes) {
-		cubes[i].update(deltaT);
-	}
+	chunk.update(deltaT);
 
 	lastUpdate = now;
 }

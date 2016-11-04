@@ -1,6 +1,6 @@
 class Cube {
 
-	constructor() {
+	constructor(position) {
 		this.buffer = {
 			'vertices' : '',
 			'verticesTextureCoord' : '',
@@ -14,30 +14,13 @@ class Cube {
 			'vertexNormal' : ''
 		};
 
-		this.rotation = Math.random() * 360;
-
-		this.position = [(5 * Math.random()) - 2.5, (5 * Math.random()) - 2.5, (5 * Math.random()) - 2.5];
-		//this.rotVector = [Math.random(), Math.random(), Math.random()]; // Rotate in a random direction
-		this.rotVector = this.position; // Rotate relative to position
-		this.velocity = [Math.random(), Math.random(), Math.random()];
-
-
-		this.id = Math.random();
+		this.position = position || [0, 0, 0];
 
 		this.shaderProgram;
 		this.cubeTexture;
 	}
 
 	update(deltaT) {
-
-		this.rotation += (30 * deltaT) / 1000.0;
-
-		vec3.scaleAndAdd(this.position, this.position, this.velocity, (3 * deltaT) / 1000.0);
-
-		for (i in this.position) {
-			if (Math.abs(this.position[i]) > 5)
-				this.velocity[i] = -this.velocity[i];
-		}
 
 	}
 
@@ -46,7 +29,6 @@ class Cube {
 		gl.useProgram(this.shaderProgram);
 
 		mvTranslate(this.position);
-		mvRotate(this.rotation, this.rotVector);
 		
 		// Draw cube: bind array buffer to cube vertices array, set attrs, push to gl
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer.vertices);
@@ -83,40 +65,40 @@ class Cube {
 
 		var vertices = [
 		  // Front face
-		  -1.0, -1.0,  1.0,
-		   1.0, -1.0,  1.0,
-		   1.0,  1.0,  1.0,
-		  -1.0,  1.0,  1.0,
+		  -0.5, -0.5,  0.5,
+		   0.5, -0.5,  0.5,
+		   0.5,  0.5,  0.5,
+		  -0.5,  0.5,  0.5,
 		  
 		  // Back face
-		  -1.0, -1.0, -1.0,
-		  -1.0,  1.0, -1.0,
-		   1.0,  1.0, -1.0,
-		   1.0, -1.0, -1.0,
+		  -0.5, -0.5, -0.5,
+		  -0.5,  0.5, -0.5,
+		   0.5,  0.5, -0.5,
+		   0.5, -0.5, -0.5,
 		  
 		  // Top face
-		  -1.0,  1.0, -1.0,
-		  -1.0,  1.0,  1.0,
-		   1.0,  1.0,  1.0,
-		   1.0,  1.0, -1.0,
+		  -0.5,  0.5, -0.5,
+		  -0.5,  0.5,  0.5,
+		   0.5,  0.5,  0.5,
+		   0.5,  0.5, -0.5,
 		  
 		  // Bottom face
-		  -1.0, -1.0, -1.0,
-		   1.0, -1.0, -1.0,
-		   1.0, -1.0,  1.0,
-		  -1.0, -1.0,  1.0,
+		  -0.5, -0.5, -0.5,
+		   0.5, -0.5, -0.5,
+		   0.5, -0.5,  0.5,
+		  -0.5, -0.5,  0.5,
 		  
 		  // Right face
-		   1.0, -1.0, -1.0,
-		   1.0,  1.0, -1.0,
-		   1.0,  1.0,  1.0,
-		   1.0, -1.0,  1.0,
+		   0.5, -0.5, -0.5,
+		   0.5,  0.5, -0.5,
+		   0.5,  0.5,  0.5,
+		   0.5, -0.5,  0.5,
 		  
 		  // Left face
-		  -1.0, -1.0, -1.0,
-		  -1.0, -1.0,  1.0,
-		  -1.0,  1.0,  1.0,
-		  -1.0,  1.0, -1.0
+		  -0.5, -0.5, -0.5,
+		  -0.5, -0.5,  0.5,
+		  -0.5,  0.5,  0.5,
+		  -0.5,  0.5, -0.5
 		];
 
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -184,40 +166,40 @@ class Cube {
 
 		var vertexNormals = [
 		  // Front
-		   0.0,  0.0,  1.0,
-		   0.0,  0.0,  1.0,
-		   0.0,  0.0,  1.0,
-		   0.0,  0.0,  1.0,
+		   0.0,  0.0,  0.5,
+		   0.0,  0.0,  0.5,
+		   0.0,  0.0,  0.5,
+		   0.0,  0.0,  0.5,
 		  
 		  // Back
-		   0.0,  0.0, -1.0,
-		   0.0,  0.0, -1.0,
-		   0.0,  0.0, -1.0,
-		   0.0,  0.0, -1.0,
+		   0.0,  0.0, -0.5,
+		   0.0,  0.0, -0.5,
+		   0.0,  0.0, -0.5,
+		   0.0,  0.0, -0.5,
 		  
 		  // Top
-		   0.0,  1.0,  0.0,
-		   0.0,  1.0,  0.0,
-		   0.0,  1.0,  0.0,
-		   0.0,  1.0,  0.0,
+		   0.0,  0.5,  0.0,
+		   0.0,  0.5,  0.0,
+		   0.0,  0.5,  0.0,
+		   0.0,  0.5,  0.0,
 		  
 		  // Bottom
-		   0.0, -1.0,  0.0,
-		   0.0, -1.0,  0.0,
-		   0.0, -1.0,  0.0,
-		   0.0, -1.0,  0.0,
+		   0.0, -0.5,  0.0,
+		   0.0, -0.5,  0.0,
+		   0.0, -0.5,  0.0,
+		   0.0, -0.5,  0.0,
 		  
 		  // Right
-		   1.0,  0.0,  0.0,
-		   1.0,  0.0,  0.0,
-		   1.0,  0.0,  0.0,
-		   1.0,  0.0,  0.0,
+		   0.5,  0.0,  0.0,
+		   0.5,  0.0,  0.0,
+		   0.5,  0.0,  0.0,
+		   0.5,  0.0,  0.0,
 		  
 		  // Left
-		  -1.0,  0.0,  0.0,
-		  -1.0,  0.0,  0.0,
-		  -1.0,  0.0,  0.0,
-		  -1.0,  0.0,  0.0
+		  -0.5,  0.0,  0.0,
+		  -0.5,  0.0,  0.0,
+		  -0.5,  0.0,  0.0,
+		  -0.5,  0.0,  0.0
 		];
 
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals), gl.STATIC_DRAW);
