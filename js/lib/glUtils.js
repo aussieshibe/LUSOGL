@@ -282,3 +282,4 @@ function getShader(gl, id, type) {
 
   return shader;
 }
+

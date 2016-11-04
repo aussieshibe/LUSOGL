@@ -12,16 +12,20 @@ requirejs.config({
 });
 
 var gl; // Global variable for WebGL context
+var camera;
 
 var lastUpdate = Date.now();
 
 var chunk;
 
-requirejs(['sylvester', 'glUtils', 'gl-matrix', 'Cube', 'Chunk'],
+
+requirejs(['sylvester', 'glUtils', 'gl-matrix', 'Cube', 'Chunk', 'Camera'],
 		start);
 
 function start() {
 	var canvas = document.getElementById("glcanvas");
+
+	camera = new Camera();
 
 	chunk = new Chunk();
 
@@ -42,6 +46,7 @@ function start() {
 	// Clear the color as well as the depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+	camera.init();
 	chunk.init(gl);
 
 	setInterval(gameLoop, 15);
@@ -75,7 +80,7 @@ function drawScene() {
 	var lookat = makeLookAt(10, 10, 10, 1, 1, 1, 0, 1, 0);
 
 	loadIdentity();
-	multMatrix(lookat);
+	multMatrix(camera.viewMatrix);
 
 	chunk.draw(gl);
 
@@ -85,6 +90,7 @@ function updateScene() {
 	var now = Date.now();
 	var deltaT = now - lastUpdate;
 	
+	camera.update(deltaT);
 	chunk.update(deltaT);
 
 	lastUpdate = now;

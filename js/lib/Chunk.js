@@ -1,7 +1,7 @@
 class Chunk {
 
 	static get SIZE() {
-		return 3;
+		return 4;
 	}
 
 	static get CUBECOUNT() {
@@ -54,5 +54,4 @@ class Chunk {
 			this.cubes[i].init(gl);
 		}
 	}
-
 }
