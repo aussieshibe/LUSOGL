@@ -1,7 +1,11 @@
 class Camera {
 
 	static get SPEED () {
-		return 10;
+		return 30;
+	}
+
+	static get MOUSESPEED () {
+		return 0.8;
 	}
 
 	constructor() {
@@ -33,14 +37,27 @@ class Camera {
 		return (this.center.subtract(this.eye)).toUnitVector();
 	}
 
+	/**
+	 * Set the forward direction, accepts a vec3 as the facing direction
+	 * relative to the camera
+	 */
+	set forward(v) {
+		this.center = this.eye.add(v);
+	}
+
 	get right() {
 		return $V([-this.forward.e(3), 0, this.forward.e(1)]);
 	}
 
 	init() {
-		var self = this;
+		// Setup callbacks for various inputs
+		// Fat-arrow functions bind the scope of the callbacks to the scope of the parent
 		document.onkeydown = (event) => this.currentlyPressedKeys[event.key.toLowerCase()] = true;
 		document.onkeyup = (event) => this.currentlyPressedKeys[event.key.toLowerCase()] = false;
+		canvas.onmousedown = (event) => this.lockCursor();
+
+		document.addEventListener('pointerlockchange', (event) => this.lockChangeListener(), false);
+		document.addEventListener('mozpointerlockchange', (event) => this.lockChangeListener(), false);
 	}
 
 	update(deltaT) {
@@ -49,10 +66,12 @@ class Camera {
 			this.currentlyPressedKeys['d'] || 0 - this.currentlyPressedKeys['a'] || 0,
 			this.currentlyPressedKeys[' '] || 0 - this.currentlyPressedKeys['c'] || 0,
 			this.currentlyPressedKeys['w'] || 0 - this.currentlyPressedKeys['s'] || 0]);
-
-		console.log(moveDirection);
-		
+	
 		this.relativeTranslate(moveDirection.x(deltaT * Camera.SPEED /1000));
+
+		if (this.currentlyPressedKeys['escape']) {
+			this.unlockCursor();
+		}
 	}
 
 	/**
@@ -62,7 +81,33 @@ class Camera {
 		var relativeTranslation = (this.right.x(v.e(1)).add(this.up.x(v.e(2))).add(this.forward.x(v.e(3))).x(1.0/3.0));
 		this.eye = this.eye.add(relativeTranslation);
 		this.center = this.center.add(relativeTranslation);
-		console.log(this);
+	}
+
+	lockCursor() {
+		canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+		canvas.requestPointerLock();
+	}
+
+	unlockCursor() {
+		canvas.exitPointerLock = canvas.exitPointerLock || canvas.mozExitPointerLock;
+		canvas.exitPointerLock();
+	}
+
+	lockChangeListener() {
+		if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {
+			console.log('The pointer lock status is now locked');
+			document.addEventListener("mousemove", (event) => this.mouseMovementHandler(event), false);
+		} else {
+			console.log('The pointer lock status is now unlocked');  
+			document.removeEventListener("mousemove", (event) => this.mouseMovementHandler(event), false);
+		}
+	}
+
+	mouseMovementHandler(event) {
+		var mouseX = event.movementX;
+		var mouseY = event.movementY;
+		this.forward = this.forward.rotate(Math.PI/2/360 * -mouseX * Camera.MOUSESPEED, Line.create(Vector.Zero(3), this.up));
+		this.forward = this.forward.rotate(Math.PI/2/360 * -mouseY * Camera.MOUSESPEED, Line.create(Vector.Zero(3), this.right));
 	}
 
 

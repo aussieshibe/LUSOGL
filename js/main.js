@@ -12,6 +12,7 @@ requirejs.config({
 });
 
 var gl; // Global variable for WebGL context
+var canvas;
 var camera;
 
 var lastUpdate = Date.now();
@@ -23,7 +24,7 @@ requirejs(['sylvester', 'glUtils', 'gl-matrix', 'Cube', 'Chunk', 'Camera'],
 		start);
 
 function start() {
-	var canvas = document.getElementById("glcanvas");
+	canvas = document.getElementById("glcanvas");
 
 	camera = new Camera();
 
@@ -76,8 +77,6 @@ function drawScene() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	perspectiveMatrix = makePerspective(45, 640.0/480.0, 0.1, 100.0);
-
-	var lookat = makeLookAt(10, 10, 10, 1, 1, 1, 0, 1, 0);
 
 	loadIdentity();
 	multMatrix(camera.viewMatrix);
