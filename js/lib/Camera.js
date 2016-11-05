@@ -14,6 +14,10 @@ class Camera {
 		this.up =  $V([0, 1, 0]);
 
 		this.currentlyPressedKeys = {};
+
+		this.mouseMovementListener = (event) => {
+			this.mouseMovementHandler(event);
+		}
 	}
 
 	get viewMatrix() {
@@ -85,21 +89,25 @@ class Camera {
 
 	lockCursor() {
 		canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-		canvas.requestPointerLock();
+		// Request pointer 
+		if(!(document.pointerLockElement === canvas || document.mozPointerLockElement === canvas))
+			canvas.requestPointerLock();
 	}
 
 	unlockCursor() {
 		canvas.exitPointerLock = canvas.exitPointerLock || canvas.mozExitPointerLock;
-		canvas.exitPointerLock();
+		if(document.pointerLockElement === canvas || document.mozPointerLockElement === canvas)
+			canvas.exitPointerLock();
+		// else the pointer is not locked
 	}
 
 	lockChangeListener() {
 		if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {
 			console.log('The pointer lock status is now locked');
-			document.addEventListener("mousemove", (event) => this.mouseMovementHandler(event), false);
+			document.addEventListener("mousemove", this.mouseMovementListener, false);
 		} else {
 			console.log('The pointer lock status is now unlocked');  
-			document.removeEventListener("mousemove", (event) => this.mouseMovementHandler(event), false);
+			document.removeEventListener("mousemove", this.mouseMovementListener, false);
 		}
 	}
 
