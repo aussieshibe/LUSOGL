@@ -14,21 +14,20 @@ requirejs.config({
 var gl; // Global variable for WebGL context
 var canvas;
 var camera;
-
-var lastUpdate = Date.now();
-
 var chunk;
+var statMon;
+var gameTimer;
 
-
-requirejs(['sylvester', 'glUtils', 'gl-matrix', 'Cube', 'Chunk', 'Camera'],
+requirejs(['sylvester', 'glUtils', 'gl-matrix', 'Cube', 'Chunk', 'Camera', 'canvasjs.min', 'StatMon', 'GameTimer'],
 		start);
 
 function start() {
 	canvas = document.getElementById("glcanvas");
-
 	camera = new Camera();
-
 	chunk = new Chunk();
+	gameTimer = new GameTimer();
+
+	statMon = new StatMon();
 
 	// Initialise GL context
 	gl = initWebGL(canvas);
@@ -47,15 +46,25 @@ function start() {
 	// Clear the color as well as the depth buffer
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+	gameTimer.init();
 	camera.init();
 	chunk.init(gl);
+	statMon.init();
 
-	setInterval(gameLoop, 15);
+	setInterval(() => statMon.draw(), 200);
+
+	gameTimer.addUpdatable(camera);
+	gameTimer.addUpdatable(chunk);
+	gameTimer.addDrawable(chunk);
+
+	mainLoop(performance.now());
 }
 
-function gameLoop() {
-	updateScene();
-	drawScene();
+function mainLoop(tFrame) {
+	gameTimer.stopMain = window.requestAnimationFrame (mainLoop);
+	statMon.startLoop();
+	gameTimer.run(tFrame);
+	statMon.finishLoop();
 }
 
 function initWebGL(canvas) {
@@ -71,26 +80,4 @@ function initWebGL(canvas) {
 	}
 
 	return gl;
-}
-
-function drawScene() {
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-	perspectiveMatrix = makePerspective(45, 640.0/480.0, 0.1, 100.0);
-
-	loadIdentity();
-	multMatrix(camera.viewMatrix);
-
-	chunk.draw(gl);
-
-}
-
-function updateScene() {
-	var now = Date.now();
-	var deltaT = now - lastUpdate;
-	
-	camera.update(deltaT);
-	chunk.update(deltaT);
-
-	lastUpdate = now;
 }
