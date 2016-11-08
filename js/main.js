@@ -18,7 +18,7 @@ var chunk;
 var statMon;
 var gameTimer;
 
-requirejs(['sylvester', 'glUtils', 'gl-matrix', 'Cube', 'Chunk', 'Camera', 'canvasjs.min', 'StatMon', 'GameTimer'],
+requirejs(['sylvester', 'gl-matrix', 'glUtils', 'Cube', 'Chunk', 'Camera', 'canvasjs.min', 'StatMon', 'GameTimer'],
 		start);
 
 function start() {
